@@ -7,19 +7,26 @@ import (
 	"strings"
 )
 
-func main() {
+func doinit() []byte {
 
 	if len(os.Args) == 1 {
-		fmt.Printf("No file name given\n")
+		fmt.Fprintln(os.Stderr, fmt.Errorf("No file name given"))
 		os.Exit(1)
 	}
-	var fpath = os.Args[1]
-	var f, err = ioutil.ReadFile(fpath)
+
+	f, err := ioutil.ReadFile(os.Args[1])
 	if err != nil {
-		fmt.Printf(err.Error())
+		fmt.Fprintln(os.Stderr, err.Error())
 		os.Exit(2)
 	}
 
+	return f
+}
+
+func main() {
+
+	f := doinit()
+	
 	var dbEntries = strings.Split(string(f), ">")
 	
 	var gc map[string]float32
@@ -28,8 +35,7 @@ func main() {
 	var maxID string
 	var maxVal float32
 
-dbEntryLoop:
-	for i := 0 ; i < len(dbEntries) ; i++ {
+dbEntryLoop: for i := 0 ; i < len(dbEntries) ; i++ {
 		if len(dbEntries[i]) == 0 {
 			continue dbEntryLoop
 		}
@@ -37,12 +43,13 @@ dbEntryLoop:
 		var entry = strings.SplitN(dbEntries[i], "\n", 2)
 		var ngc, ntot int = 0, 0
 		var seq = entry[1]
-		for j := 0 ; j < len(seq) ; j++ {
-			if seq[j] == 'A' || seq[j] == 'T' || seq[j] == 'G' || seq[j] == 'C' {
-				ntot++
-			}
-			if seq[j] == 'G' || seq[j] == 'C' {
+		for j := range(seq) {
+			switch seq[j] {
+			case 'G', 'C':
 				ngc++
+				fallthrough
+			case 'A', 'T':
+				ntot++
 			}
 		}
 		var curgc = 100.0 * (float32(ngc) / float32(ntot))

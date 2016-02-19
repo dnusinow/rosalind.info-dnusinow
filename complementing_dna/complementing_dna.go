@@ -6,34 +6,37 @@ import (
 	"os"
 )
 
-func main() {
+func doinit() []byte {
 
 	if len(os.Args) == 1 {
-		fmt.Printf("No file name given\n")
+		fmt.Fprintln(os.Stderr, fmt.Errorf("No file name given"))
 		os.Exit(1)
 	}
-	var fpath = os.Args[1]
-	var f, err = ioutil.ReadFile(fpath)
+
+	f, err := ioutil.ReadFile(os.Args[1])
 	if err != nil {
-		fmt.Printf(err.Error())
+		fmt.Fprintln(os.Stderr, err.Error())
 		os.Exit(2)
 	}
 
+	return f
+}
+
+func main() {
+
+	f := doinit()
+	
 	for i := len(f) - 1; i >= 0 ; i-- {
 		switch f[i] {
 		case 'A':
-			fmt.Printf("%c", 'T')
+			fmt.Print("T")
 		case 'T':
-			fmt.Printf("%c", 'A')
+			fmt.Print("A")
 		case 'C':
-			fmt.Printf("%c", 'G')
+			fmt.Print("G")
 		case 'G':
-			fmt.Printf("%c", 'C')
-		case '\n':
-		default:
-			// fmt.Printf("Error: %c", f[i])
-			// os.Exit(3)
+			fmt.Print("C")
 		}
 	}
-	fmt.Printf("\n")
+	fmt.Print("\n")
 }

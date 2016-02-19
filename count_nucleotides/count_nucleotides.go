@@ -6,23 +6,30 @@ import (
 	"os"
 )
 
-func main() {
+func doinit() []byte {
 
 	if len(os.Args) == 1 {
-		fmt.Printf("No file name given\n")
+		fmt.Fprintln(os.Stderr, fmt.Errorf("No file name given"))
 		os.Exit(1)
 	}
-	var fpath = os.Args[1]
-	var f, err = ioutil.ReadFile(fpath)
+
+	f, err := ioutil.ReadFile(os.Args[1])
 	if err != nil {
-		fmt.Printf(err.Error())
+		fmt.Fprintln(os.Stderr, err.Error())
 		os.Exit(2)
 	}
 
+	return f
+}
+
+func main() {
+
+	f := doinit()
+	
 	var n map[byte]int
 	n = make(map[byte]int)
-	for i := 0 ; i < len(f) ; i++ {
+	for i := range(f) {
 		n[f[i]]++
 	}
-	fmt.Printf("%d %d %d %d\n", n['A'], n['C'], n['G'], n['T'])
+	fmt.Println(n['A'], n['C'], n['G'], n['T'])
 }

@@ -8,27 +8,33 @@ import (
 	"strconv"
 )
 
-func main() {
+func doinit() []byte {
 
 	if len(os.Args) == 1 {
-		fmt.Printf("No file name given\n")
+		fmt.Fprintln(os.Stderr, fmt.Errorf("No file name given"))
 		os.Exit(1)
 	}
-	var fpath = os.Args[1]
-	var fb, err = ioutil.ReadFile(fpath)
-	var f = string(fb)
+
+	f, err := ioutil.ReadFile(os.Args[1])
 	if err != nil {
-		fmt.Printf(err.Error())
+		fmt.Fprintln(os.Stderr, err.Error())
 		os.Exit(2)
 	}
 
+	return f
+}
+
+func main() {
+
+	f  := string(doinit())
+	
 	var fields = strings.Fields(f)
 	var n, nerr = strconv.Atoi(fields[0])
 	var k, kerr = strconv.Atoi(fields[1])
 
 	if nerr != nil || kerr != nil {
-		fmt.Printf(nerr.Error())
-		fmt.Printf(kerr.Error())
+		fmt.Println(os.Stderr, nerr.Error())
+		fmt.Println(os.Stderr, kerr.Error())
 		os.Exit(3)
 	}
 
@@ -40,5 +46,5 @@ func main() {
 	for i := 2 ; i < n ; i++ {
 		rabbitPairs[i] = rabbitPairs[i-1] + (k * rabbitPairs[i-2])
 	}
-	fmt.Printf("%d\n", rabbitPairs[n-1])
+	fmt.Println(rabbitPairs[n-1])
 }

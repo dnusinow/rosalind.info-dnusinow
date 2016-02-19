@@ -7,32 +7,40 @@ import (
 	"strings"
 )
 
-func main() {
+func doinit() []byte {
 
 	if len(os.Args) == 1 {
-		fmt.Printf("No file name given\n")
+		fmt.Fprintln(os.Stderr, fmt.Errorf("No file name given"))
 		os.Exit(1)
 	}
-	var fpath = os.Args[1]
-	var fb, err = ioutil.ReadFile(fpath)
-	var f = string(fb)
+
+	f, err := ioutil.ReadFile(os.Args[1])
 	if err != nil {
-		fmt.Printf(err.Error())
+		fmt.Fprintln(os.Stderr, err.Error())
 		os.Exit(2)
 	}
 
+	return f
+}
+
+func main() {
+
+	f := string(doinit())
+	
 	var seqs = strings.Split(f, "\n")
 
 	if len(seqs[0]) != len(seqs[1]) {
-		fmt.Printf("Sequences were of different length!")
+		errmsg := fmt.Errorf("Sequences were of different length: %d and %d",
+			len(seqs[0]), len(seqs[1]))
+		fmt.Fprintln(os.Stderr, errmsg)
 	}
 
 	var n int
-	for i := 0 ; i < len(seqs[0]) ; i++ {
+	for i := range(seqs[0]) {
 		if seqs[0][i] != seqs[1][i] {
 			n++
 		}
 	}
 
-	fmt.Printf("%d\n", n)
+	fmt.Println(n)
 }
