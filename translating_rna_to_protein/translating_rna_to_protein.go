@@ -25,9 +25,9 @@ func doinit() []byte {
 
 func main() {
 
-	f:= strings.Trim(string(doinit()), " \n")
+	f := strings.Trim(string(doinit()), " \n")
 
-	var codontbl = map[string]string {
+	var codontbl = map[string]string{
 		"UUU": "F",
 		"CUU": "L",
 		"AUU": "I",
@@ -94,14 +94,21 @@ func main() {
 		"GGG": "G",
 	}
 
-	for i := 0 ; i < len(f) ; i += 3 {
-		codon := f[i:i+3]
-		aa := codontbl[codon]
-		if aa == "Stop" {
-			fmt.Print("\n")
-			os.Exit(0)
+	for i := 0; i < len(f); i += 3 {
+		codon := f[i : i+3]
+		if aa, ok  := codontbl[codon]; ok {
+			if aa == "Stop" {
+				fmt.Print("\n")
+				os.Exit(0)
+			} else {
+				fmt.Print(aa)
+			}
 		} else {
-			fmt.Print(aa)
+			fmt.Fprintln(os.Stderr,
+				fmt.Errorf("The codon %s is not in the translation table",
+					codon))
+			os.Exit(3)
+
 		}
 	}
 }
